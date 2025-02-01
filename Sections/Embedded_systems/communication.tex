@@ -1,0 +1,18 @@
+\subsection{Collision-free communication}
+Upon arriving at the competition during RoboCup 2024, an important problem
+arised when we started testing our strategies. The robots would perform erratic
+movements that were different from the orders sent.
+
+The problem was that some packets arrived corrupted, because the packet
+sending was not correctly implemented. As specified by the nRF24L01+ module's
+datasheet, each packet has an air-time depending on its size (specified in seconds).
+Thus meaning it is mandatory to wait such an amount of time before sending the next
+packet.
+
+As mentioned in our previous TDP, the original goal to enable reception of feedbacks while not causing any 
+pakcet collision was to use Time-Distributed Multiple Access, a technique that
+attributes a slot time to each device. Team TIGERs Manheim have described such an use \cite{tigers_tdp_2020}
+to be viable for collision-less communication.
+
+Instead of assigning a given time slot, we use the capabilities of the nRF24L01+ module,
+that raises an interrupt once a packet is correctly transmitted
