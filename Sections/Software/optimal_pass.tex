@@ -1,0 +1,72 @@
+\subsection{Optimal pass computing}
+
+Passing behaviour is one of the critical aspects of the SSL, allowing to perform
+more complex behaviour. Thus, we have implemented a score-based search algorithm
+where, given a rectangular region on the field, returns the best location towards
+which the ball should be shot to.
+
+Consider a robot that currently has the ball at location $p_{start}$, and would like to pass it to one
+of its allies. Instead of selecting the best ally to perform the pass to,
+we search for an optimal target location instead, expecting the nearest ally robot
+to receive the ball. To do so, a rectangular search zone
+is defined on the field, and using a given step value, a grid of evenly spaced points is generated inside it.
+Each point generated defines a possible pass location, where the ball should approximately land after being shot.
+To select the best one, a score is computed for each point $p_{pass}$,
+based on the pass trajectory vector, enemy robots positions and velocities. By denoting the set of 
+enemy robot positions as $S_{enemy}$, and ally positions as $S_{ally}$ the three conditions are as follows:
+
+\begin{enumerate}
+    \item \textbf{Enemy distance to pass trajectory}
+    With $\overrightarrow{v_p} = p_{pass} - p_{start}$ the pass trajectory vector,
+    and $\overrightarrow{v_e} = p_e - p_{start}$ the vector from the start location to the enemy,
+    we project $\overrightarrow{v_e}$ onto $\overrightarrow{v_p}$ to compute this distance.
+    This is performed for each enemy robot, giving the score computed by equation \ref{eq:enn-block-traj},
+    with $proj(\overrightarrow{v_a}, \overrightarrow{v_a})$ denoting the vector projection of $\overrightarrow{v_a}$ onto $\overrightarrow{v_b}$, and $distance()$ being the euclidean distance function.
+    
+    \begin{equation}
+        \label{eq:enn-block-traj}
+        \sum_{p_{e} \in S_{enemy}}{\frac{-1}{(1 + distance(p_{start}, proj(\overrightarrow{v_e}, \overrightarrow{v_p})))}}
+    \end{equation}
+
+    The total sum is a malus to the final score, the malus being higher when the distance is smaller.
+    Note that, if the resulting projected vector of an enemy position on the pass trajectory,
+    lands outside of this trajectory, this computation is not performed and its score malus is set to 0.
+
+    \item \textbf{Distance of the closest ally to the pass location}
+    Naturally, the closer the ally is to the expected landing location, the less time will be required
+    to catch the ball and manipulate it further. Due to electromagnetic interferences coming
+    from our kicker mechanism, the maximum kicking power is limited, thus outgoing ball speed
+    is not taken into account when calculating this score.
+    The computed score is given by \ref{eq:dist-closest-ally}.
+    
+    \begin{equation}
+        \label{eq:dist-closest-ally}
+        k_{dca} \times \min_{p_a \in S_{ally}}{distance(p_a, p_{pass})}
+    \end{equation}
+    
+    where $k_{dca}$ is a real coefficient used to scale the output score computed.
+
+    \item \textbf{Enemy time of collison to the pass trajectory}
+
+\end{enumerate}
+
+%todo: equations for each
+Figure \ref{graph_optimal_pass_example} explicits the different conditions on an example situation.
+
+%\begin{figure}
+%   \label{graph_optimal_pass_example}
+%   \includegraphics{graph_pass.jpg}
+%\end{figure}
+
+% a score telling us how probable we can perform the pass properly
+% based on three conditions
+% - closest dist enemy to its projection on pass trajectory (minus robot radius)
+% - pass distance (from robot to target pass location)
+
+% TODO: replace 3rd condition with time step based collision detection (check every dt)
+% - speed vector towards trajectory : log10(||v||) + 1.
+
+% - display example on a graph + heatmap of score passing
+% - explain improvements
+% - add additional score heuristic that can make this useful for
+%   best spot to shoot from to score
