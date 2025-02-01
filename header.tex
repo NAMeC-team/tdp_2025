@@ -1,37 +1,50 @@
 \title{
   NAMeC - Team Description Paper \\
-  Small Size League RoboCup 2024 \\
+  Small Size League RoboCup 2025 \\
   Application of Qualification in Division B
 }
 
 \titlerunning{NAMeC - Team Description Paper}
 
 \author{
-    M. Bernet, E. Bouvier, A. Calugi, B.Chew, P. Félix, J. Gautier, C. Godinat, C. Gubanski,
-    C.Labbé, J. Lindois, T.W. Meunier, E. Miqueu, N. Morera, E. Schmitz, C.A. Vlamynck
+    M. Bernet, E. Bouvier, A. Calugi, B.Chew, P. Félix, J. Gautier, C. Godinat,
+    C.Labbé, J. Lindois, T.W. Menier, C.A. Vlamynck
 }
 
-\authorrunning{E. Schmitz et al.}
+\authorrunning{T.W. Menier et al.}
 
 \institute{IUT - Université de Bordeaux, Gradignan, France \\
-\email{contact@etienne-schmitz.com} (corresponding author)
+\email{wanchai.menier@gmail.com} (corresponding author)
 }
 
 \maketitle
 
+\renewenvironment{abstract}
+{\begin{quote}
+\noindent \par{\bfseries \abstractname}}
+{\medskip\noindent
+\end{quote}
+}
+
 \begin{abstract}
-  This paper outlines the latest developments and enhancements undertaken by NAMeC, the RoboCup Small Size League team located in the University of Bordeaux, France.
+The following paper presents the advancements of NAMeC, french robotics team 
+which has participated four times in the SSL league at Montreal, Sydney, Bordeaux, and Eindhoven.
+  
+As the architecture of the robot is being renewed \cite{tdp2023}, this paper will go
+in detail about the different firmware and software improvements
+that have been made to improve the quality of control system on our robots.
 \end{abstract}
 
 \keywords{RoboCup, Small Size League, embedded systems, path planning, decision making}
 
 \section{Introduction}
 
-\textbf{NAMeC: Aiming for Excellence in RoboCup Small Size League}
+Since joining the RoboCup Small Size League in 2018, the team has participated in four major competitions: Montreal, Sydney, Bordeaux, and Eindhoven.
+The last competition is a significant milestone, as we transitioned to a fully student-led organization.
 
-Since joining the RoboCup Small Size League in 2018, NAMeC has proudly participated in four major competitions: Montreal, Sydney, Bordeaux, and Eindhoven. Over the years, our team has continuously evolved, with the 2024 season marking a significant milestone as we transitioned to a fully student-led organization. This restructuring has propelled us to achieve our best result yet—4th place at RoboCup 2024.
-
-With our sights set firmly on the podium this year, we have implemented several critical improvements to enhance our performance. These include the development of \textbf{BigBro}, a decision-making algorithm to optimize strategy, and \textbf{Trinamic}, a hardware solution for efficient Field-Oriented Control (FOC). Additionally, we have introduced advanced obstacle avoidance techniques, implemented \textbf{Payload ACK} with TDMA for reliable communication, and designed a new wheel-fixing system to improve stability. Other upgrades include the use of enhanced shell materials for durability and performance, as well as an innovative team color-changing system for improved visibility and adaptability.
-
-With these advancements, NAMeC is determined to make a significant impact at this year’s RoboCup and take another step toward becoming a leader in the RoboCup SSL community.
-
+With our sights set firmly on the podium this year, we have implemented several critical improvements to enhance our performance.
+These include the development of \textbf{BigBro}, a decision-making algorithm to optimize strategy, and \textbf{Trinamic},
+a hardware solution for efficient Field-Oriented Control (FOC). Additionally, we have introduced advanced obstacle avoidance techniques,
+implemented \textbf{Payload ACK} with TDMA for reliable communication, and designed a new wheel-fixing system to improve stability.
+Other upgrades include the use of enhanced shell materials for durability and performance, as well as an innovative team color-changing
+system for improved visibility and adaptability.
