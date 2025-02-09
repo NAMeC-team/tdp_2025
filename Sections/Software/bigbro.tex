@@ -1,1 +1,29 @@
-\subsection{BigBro}
+\subsection{Big Bro}
+
+In a multi-robot system, efficient communication and decision-making are essential to achieving coordinated behavior. To facilitate this, we implemented \textbf{Big Bro}, a centralized message-based decision manager that allows robots to exchange information and coordinate their actions dynamically.  
+
+\subsubsection{Message Passing Mechanism}
+
+Big Bro functions as a \textbf{message pipe}, where all robots continuously read and write messages. Each robot listens for messages addressed to it and can publish its own messages, allowing for real-time data exchange.
+
+\subsubsection{Decision-Making Process}
+
+Depending on the current game state and robot capabilities, Big Bro assign tasks to robots, such as \textit{defending the goal}, \textit{intercepting the ball}, or \textit{passing to a teammate}.
+
+\subsubsection{Example: Searching for a Receiver}
+
+When one of our robot own the ball, and the opponent goal is defended, the robot will send a message to Big Bro, asking for a teammate to pass the ball to. Big Bro will then select the best teammate to pass the ball to. He will then assign the passing strategy to the robot with the ball, and the receiving strategy to the selected teammate.
+
+The selection of the receiver is based on several factors :
+\begin{itemize}
+    \item Distance to expected ball landing position
+    \item Free-space availability (no nearby opponents)
+    \item Alignment the goal
+\end{itemize}
+
+
+
+
+\subsubsection{Future Enhancements}
+
+While the idea of Big Bro is simple, it has proven to not be very effective in practice because of the way we implemented it. So we plan on rewriting Big Bro to be more efficient and effective in the future.
