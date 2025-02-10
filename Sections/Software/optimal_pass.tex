@@ -1,70 +1,133 @@
 \subsection{Optimal pass computing}
 
 Passing behaviour is one of the critical aspects of the SSL, allowing to perform
-more complex behaviour. Thus, we have implemented a score-based search algorithm
-where, given a rectangular region on the field, returns the best location towards
-which the ball should be shot to.
+more complex behaviour. In football games, players tend to pass the ball to teammates in movement,
+often towards the most open space.
+To imitate this behaviour, we have implemented a
+score-based search algorithm where, given a rectangular region on the field, returns the best location towards
+which the ball should be shot to, in a straight line (chipped kicks are not considered).
+The presented method was motivated by the work of team ZJUNLict, who have defined a score-based evaluation method to
+determine optimal passes \cite{tdp_zjunlict_2020}. We present a similar method but based on different conditions.
 
 Consider a robot that currently has the ball at location $p_{start}$, and would like to pass it to one
 of its allies. Instead of selecting the best ally to perform the pass to,
 we search for an optimal target location instead, expecting the nearest ally robot
 to receive the ball. To do so, a rectangular search zone
-is defined on the field, and using a given step value, a grid of evenly spaced points is generated inside it.
+is defined on the field, and a grid of evenly spaced points is generated inside it.
 Each point generated defines a possible pass location, where the ball should approximately land after being shot.
 To select the best one, a score is computed for each point $p_{pass}$,
-based on the pass trajectory vector, enemy robots positions and velocities. By denoting the set of 
-enemy robot positions as $S_{enemy}$, and ally positions as $S_{ally}$ the three conditions are as follows:
+based on the pass trajectory vector $\overrightarrow{v_p} = p_{pass} - p_{start}$,
+an enemy robot position $p_{e}$, and its linear velocity
+$\begin{bmatrix}
+    \dot{x_e} & \dot{y_e}
+\end{bmatrix}^T$.
 
-\begin{enumerate}
-    \item \textbf{Enemy distance to pass trajectory}
-    With $\overrightarrow{v_p} = p_{pass} - p_{start}$ the pass trajectory vector,
-    and $\overrightarrow{v_e} = p_e - p_{start}$ the vector from the start location to the enemy,
-    we project $\overrightarrow{v_e}$ onto $\overrightarrow{v_p}$ to compute this distance.
-    This is performed for each enemy robot, giving the score computed by equation \ref{eq:enn-block-traj},
-    with $proj(\overrightarrow{v_a}, \overrightarrow{v_a})$ denoting the vector projection of $\overrightarrow{v_a}$ onto $\overrightarrow{v_b}$, and $distance()$ being the euclidean distance function.
+\begin{itemize}
+    \item \textbf{Enemy perpendicular distance to pass trajectory}
+    For each enemy, we measure the distance to its orthogonal projection onto the pass trajectory.
+    If the projected point lands outside the pass trajectory, the malus attributed is 0.
+    Otherwise, equation \ref{eq:enn-block-traj} gives the malus to compute,
+    $distance()$ being the euclidean distance function, and $proj(p, \vec{B})$ returning a point,
+    the orthogonal projection of point $p$ onto $\vec{B}$.
     
     \begin{equation}
         \label{eq:enn-block-traj}
-        \sum_{p_{e} \in S_{enemy}}{\frac{-1}{(1 + distance(p_{start}, proj(\overrightarrow{v_e}, \overrightarrow{v_p})))}}
+        \textit{blocking score} =
+        \begin{dcases}
+            \frac{-1}{1 + distance(p_{start}, proj(p_e, \overrightarrow{v_p}))} & \text{ if } d \leq 1.5 \\
+            0 & \text{ otherwise}
+        \end{dcases}
     \end{equation}
 
-    The total sum is a malus to the final score, the malus being higher when the distance is smaller.
-    Note that, if the resulting projected vector of an enemy position on the pass trajectory,
-    lands outside of this trajectory, this computation is not performed and its score malus is set to 0.
+    The total sum computed for each enemy robot is a malus to the final score, being higher when the distance is smaller.
+    After a certain threshold, distance is considered to be too high to be a danger for this pass 
+    trajectory, so the malus becomes 0. \\
 
-    \item \textbf{Distance of the closest ally to the pass location}
-    Naturally, the closer the ally is to the expected landing location, the less time will be required
+    \item \textbf{Closest ally to pass location}
+    Naturally, the closer the ally is to the expected landing location, the less time is required
     to catch the ball and manipulate it further. Due to electromagnetic interferences coming
-    from our kicker mechanism, the maximum kicking power is limited, thus outgoing ball speed
-    is not taken into account when calculating this score.
-    The computed score is given by \ref{eq:dist-closest-ally}.
+    from our kicker mechanism, the maximum kicking power is limited, thus we chose to not take into account outgoing ball speed
+    when calculating this score. By computing the closest ally's distance using $d_{min}$ as defined in (\ref{eq:d-min-ally})
+    the score is given by equation (\ref{eq:dist-closest-ally}), with $P_{allies}$ denoting the set of $(x, y)$ ally positions on the field.
     
     \begin{equation}
-        \label{eq:dist-closest-ally}
-        k_{dca} \times \min_{p_a \in S_{ally}}{distance(p_a, p_{pass})}
+        \label{eq:d-min-ally}
+        d_{min} = \min_{p_a \in P_{allies}} distance(p_a, p_{pass})
     \end{equation}
+
+    \begin{equation}
+        \label{eq:dist-closest-ally}
+        \textit{proximity score} =
+        \begin{dcases}
+            \frac{1}{1 + d_{min}} & \text{if } d_{min} < 1.25\\
+            -2 & \text{otherwise}
+        \end{dcases}
+    \end{equation}
+
+    The malus applied if distance is too small is to discourage
+    short passes very close to the starting pass location. \\
     
-    where $k_{dca}$ is a real coefficient used to scale the output score computed.
+    \item \textbf{Coordinate x position on the field}
+    Passes must allow progress on the field. As arriving next to a goal line is not ideal, the maximum score value
+    is attained at the middle of half of the touch line. Depending on whether the playing team is on the positive
+    or negative half of the field, equation (\ref{eq:field-progress}) give the respective score depending on the side.
+    \begin{equation}
+        \label{eq:field-progress}
+        \textit{field progress score} =
+        \begin{dcases}
+            -\frac{x (x + \frac{9}{2})}{5} & \text{if on positive half}. \\
+            -\frac{x (x - \frac{9}{2})}{5} & \text{otherwise}
+        \end{dcases}
+    \end{equation} \\
 
     \item \textbf{Enemy time of collison to the pass trajectory}
+    Based ony an enemy robot's velocity vector,
+    we perform an iterative search over the trajectory to compute possible collisions with each
+    enemy robot. Tigers Manheim have described their algorithm for collision checking in \cite{tdp_tigers_2024}, section 3.3.
+    A similar approach has been implemented, attributing an increasing collision circle for a robot over time.
 
-\end{enumerate}
+    We iterate on the trajectory at fixed time steps. At each step, we compute the collision circle of an enemy robot
+    and check for collision. Origin of this collision circle is biased using the enemy's velocity vector, as robots rarely change
+    abruptly their driving direction during a match.
 
-%todo: equations for each
-Figure \ref{graph_optimal_pass_example} explicits the different conditions on an example situation.
+    Because the collision circle is a prediction, the starting score at $t_0$ is set to 1. This value
+    decreases as the current time step increases. If a collision is found at time step $t$ in seconds,
+    \ref{eq:enn-time-collision} gives the predicted collision score.
 
-%\begin{figure}
-%   \label{graph_optimal_pass_example}
-%   \includegraphics{graph_pass.jpg}
-%\end{figure}
+    \begin{equation}
+        \label{eq:enn-time-collision}
+        \textit{predict collision}: f(t) = -e^{-2 * t}
+    \end{equation} \\
 
-% a score telling us how probable we can perform the pass properly
-% based on three conditions
-% - closest dist enemy to its projection on pass trajectory (minus robot radius)
-% - pass distance (from robot to target pass location)
+    Computing this score requires to predict the ball's position over time after kicking.
+    For the moment, we use a polynomial approximation to test this algorithm. In the future, we plan to create
+    a kinematic model for the ball based on our mechanical kicker structure.
 
-% TODO: replace 3rd condition with time step based collision detection (check every dt)
-% - speed vector towards trajectory : log10(||v||) + 1.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.6]{world}
+    \caption{Testing world configuration for the pass score estimation algorithm implemented. The yellow team is the enemy and
+    is placed on  the positive half of the field. Search grid has been limited inside the enemy's side.}
+    \label{fig:world-setup}
+\end{figure}
+
+
+By summing up these score computations, alongside a given weight for each $\sum{\omega_{i}s_i}$ with $\omega_i$ the weight for each $s_i$ score computed.
+This allows us to tune the algorithm to favour certain conditions over others. Figure \ref{fig:combined} presents the resulting score heatmap obtained
+on a given world configuration, with figure \ref{fig:world-setup}.
+Individual score outputs are presented in figure \ref{fig:split-heatmaps}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{combined}
+    \caption{Resulting weighted sum for each point computed inside the search space. The heatmap is not smoothed
+    and presents a value for each point. All weights of the score functions were set to one, with the exception of the ``closest ally' condition,
+    whose weight was set to 4.}
+    \label{fig:combined}
+\end{figure}
+
 
 % - display example on a graph + heatmap of score passing
 % - explain improvements

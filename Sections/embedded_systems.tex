@@ -1,11 +1,11 @@
 \section{Firmware improvements}
-While the main focus of the team is on improving the
-central AI system and designing a new robot from the ground up,
-some important features were not available at the competition
-due to the Rust rewrite
-generation of robots that we have. This way, it will be easier
-to transition 
-
+Last year, most of our firmware had been rewritten in Rust.
+The last part missing is code for motor control.
+As the team is discussing whether to use a Rust-only communication protocol,
+having a stable version written in C++ is the current objective until the Rust version
+is ready for a full transition. By doing this, it will be beneficial
+to perform comparisons between the two firmwares, and leaves us with a stable
+solution if the Rust version were to have problems.
 
 \input{Sections/Embedded_systems/payload_ACK.tex}
 
