@@ -1,1 +1,9 @@
-\subsection{Payload ACK}
+\subsection{Receiving feedback from robots}
+
+The team currently uses the nRF24L01+ radio module to communicate with the robots.
+Up until now, command sending was single way, we didn't receive feedback from the robots.
+This year, we use the payload ACK capability of the radio module. Each time a command is sent
+to a robot, it responds with an acknowledgement packet to confirm reception.
+The radio module allows us to put a 32 bytes of data inside the ACK packet,
+thus enabling full-duplex communication, allowing us to receive ball detection data
+and motor speeds.

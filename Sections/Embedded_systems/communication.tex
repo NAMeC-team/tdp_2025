@@ -1,0 +1,21 @@
+\subsection{Collision-free communication}
+Upon arriving at the competition during RoboCup 2024, we fixed our radio communication
+which emitted packets that seemed corrupted to the robots. This year, the communication has been made more
+robust.
+
+As mentioned in our previous TDP, the original goal to enable reception of feedbacks while not causing any 
+pakcet collision was to use Time Distributed Multiple Access (TDMA). Team TIGERs Manheim have described such an use \cite{tigers_tdp_2020}
+to be viable for collision-less communication. The idea behind TDMA is assigning a fixed slot time
+for communication, such that packets for robot 0 are always sent in this time window.
+Currently, speed control of our robots is done by continuously sending a packet
+that contains the target speed for the robot to attain. So instead of implementing
+TDMA, we have chosen to simply send packets sequentially,
+with the capabilities of the nRF24L01+ module.
+
+
+The radio module raises an interrupt pin on correct packet emission. Since auto-acknowledgement is enabled, 
+as mentioned in the previous section, once this acknowledgement has been received by our emitting station,
+or if the acknowledgement times out, the interrupt pin is raised.
+After receiving the interrupt, we load and send the packet for the next robot, and immediately send it.
+Because each packet is sent sequentially, this effectively creates a unique slot time for each robot.
+This approach is very close to TDMA and is possible thanks to the payload ACK feature of the nRF24L01+.
