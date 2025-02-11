@@ -12,9 +12,9 @@ Depending on the current game state and robot capabilities, Big Bro assign tasks
 
 \subsubsection{Example: Searching for a Receiver}
 
-When one of our robot own the ball, and the opponent goal is defended, the robot will send a message to Big Bro, asking for a teammate to pass the ball to. Big Bro will then select the best teammate to pass the ball to. He will then assign the passing strategy to the robot with the ball, and the receiving strategy to the selected teammate.
+When one of our robot owns the ball, and the opponent goal is being defended by enemies, the robot will send a message to Big Bro, asking for a teammate to pass the ball to. Big Bro will then select the best teammate to pass the ball to. He will then assign the passing strategy to the robot with the ball, and the receiving strategy to the selected teammate.
 
-The attacker target calculation is done by casting robots shadows on the enemy goal line (see figure \ref{fig:attacker_target_choice}), and retrieve the resulting free spaces where we can shoot.
+The attacker target calculation is done by casting robots shadows on the enemy goal line (see figure \ref{fig:attacker_target_choice}), and retrieves the resulting free spaces where we can score a goal.
 In the case where the entire goal line is covered by the shadows, the searching for a passer message will be sent to Big Bro.
 \begin{figure}
 \centering

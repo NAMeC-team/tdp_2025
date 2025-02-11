@@ -10,8 +10,8 @@ to keep the codebase simple, as we do not need all of the functionalities of a f
 In particular, the state machine of a match runs infinitely (thus no accepting state).
 
 The Rust language provides a match statement, which allows for pattern matching in the code.
-Using this mechanism, only the transition function is required to correctly parse the game states
-of the match. The transition function performs pattern matching over four variables:
+Using this mechanism, most of the state machine detection is handled inside a single transition function, 
+to correctly parse the game states of the match. The transition function performs pattern matching over four variables:
 current game state, latest command sent by the referee, reference poistion for the ball and latest
 game event. With unit testing, this has proven sufficient to handle game states correctly,
 and is much readable to the human eye, as pattern matching looks closely to listing the transitions

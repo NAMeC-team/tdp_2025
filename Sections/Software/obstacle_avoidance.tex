@@ -2,7 +2,7 @@
 Before the competition of 2024, the team has implemented a new obstacle avoidance algorithm which has
 proven to be effective at low driving speeds and with moving targets. This section will go in detail about how the implementation works.
 
-When the robot wants to move to a specific position, he first checks if any other robot is in his way (direct line between him and the target), if there is it initiates a pathfinding algorithm to explore alternative routes. This exploration phase involves adjusting the robot's direction by incrementally rotating the vector facing the target, to the left and to the right, until a free angle is identified. The exploration tree is a binary tree with a branch going to the left and the other to the right of the robot.
+When the robot wants to move to a specific position, he first checks if any other obstacle isn't in his way (direct line between him and the target), if there isn't an open path, it initiates a pathfinding algorithm to explore alternative routes. This exploration phase involves adjusting the robot's direction by incrementally rotating the vector facing the target, to the left and to the right, until a free angle is identified. The exploration tree is a binary tree with a branch going to the left and the other to the right of the robot.
 
 \begin{itemize}
     \item \textbf{Obstacle Detection and Rotation}
@@ -12,11 +12,11 @@ When the robot wants to move to a specific position, he first checks if any othe
 
     \item \textbf{Recursive Exploration}
 
-    When a free path is identified, the algorithm recursively evaluates the next step from the new position. It continues checking whether this position brings the robot closer to the target while considering any new obstacles in its way. The exploration process repeats until the target is reached or the maximum iteration number is reached.
+    When a free path is identified, the algorithm recursively evaluates the next step from the new position. It continues checking whether this position brings the robot closer to the target while considering any new obstacles in its way. The exploration process is repeated until the target is reached or the maximum iteration number is reached.
 
     \item \textbf{Trajectory Smoothing}
 
-    Once a path is calculated, it is smoothed to eliminate unnecessary waypoints, retaining only significant points to optimize the trajectory. The way it's done is by itterating over the path, from the target to the robot, and check for each points if the robot can reach it without hitting an obstacle. If it can, the point is removed from the path, otherwise it is kept and we continue to the next point considering the current one as a new reference.
+    Once a path is calculated, it is smoothed to eliminate unnecessary waypoints, retaining only significant points to optimize the trajectory. It is performed by iterating over the points constituting the path, from the target to the robot, and check for each points if the robot can reach it without hitting an obstacle. If it can, the point is removed from the path, otherwise it is kept and we continue to the next point considering the current one as a new reference.
 
     \item \textbf{Optimal Direction Selection}
 
@@ -36,24 +36,24 @@ When the robot wants to move to a specific position, he first checks if any othe
 
 \subsubsection{Comparison with Informed RRT*}
 This obstacle avoidance algorithm has proven to be sufficient in practice. To compare its performance, we have decided to implement
-a modification of the Informed RRT* algorithm described by team KIKSbot \cite{tdp_kiksbot_2023}. Since RRT* is a popular choice in the SSL communinity,
+a modification of the Informed RRT* path finding algorithm described by team KIKSbot \cite{tdp_kiksbot_2023}. Since RRT* is a popular choice in the SSL communinity,
 choosing this algorithm seems to form a good comparison basis.
 
-The Informed RRT* search was performed over 800 iterations, but because of its stochastic nature, a path might not be found
-during these steps. So the search has been run 20 times in order for the algorithm to give us the best result and lowest-path cost.
-Observing the results of both search algorithms, depicted in figures \ref{fig:own-obs-avoid} and \ref{fig:informed-rrt-star}.
-Cost of a path is defined as the cumulative distance of each point in the path. Note that no smoothing was performed on the Informed RRT* result.
+The Informed RRT* search was parameterized to perform 800 iterations, but because of its stochastic nature, a path might not be found
+during these steps. In a real-life context, the path finding is run continuously during a match, so the search has been run 20 times
+in order for the algorithm to give us the best result and lowest-path cost (in terms of distance traveled).
+Note that no smoothing was performed on the Informed RRT* result.
 
 \begin{figure}[h]
     \centering
     \begin{subfigure}[c][][c]{0.4\linewidth}
-        \includegraphics[scale=0.5]{rstar}
+        \includegraphics[scale=0.45]{rstar}
         \caption{Binary-tree based search}
         \label{fig:own-obs-avoid}
     \end{subfigure}
     \hfill
     \begin{subfigure}[c][][c]{0.4\linewidth}
-        \includegraphics[scale=0.5]{informed_rrt}
+        \includegraphics[scale=0.45]{informed_rrt}
         \caption{Informed RRT* square search}
         \label{fig:informed-rrt-star}
     \end{subfigure}
@@ -63,3 +63,12 @@ Cost of a path is defined as the cumulative distance of each point in the path. 
     The start and target points are respectively in blue and green,
     and grey points in the Informed RRT* graph represent the resulting tree generated.}
 \end{figure}
+
+Observing the results of both search algorithms, depicted in figures \ref{fig:own-obs-avoid} and \ref{fig:informed-rrt-star},
+our algorithm finds a path of lower cost compared to Informed RRT*. The main advantage of our algorithm is that it is deterministic
+and the next point search is always either towards the target, or to avoid an obstacle.
+On static obstacles, we have determined experimentally that our algorithm often struggles between one intermediate target and another,
+which is one of the main downsides of the path finding implemented. This was not a behavior that occured often during the SSL matches,
+and we had difficulty recreating it in a testing environment. In conclusion, while both algorithms have their positive points,
+the presented algorithm removes randomness, while still requiring to smooth the past in some cases. Stuttering could still be fixed by
+not running the algorithm at every iteration of our main software.

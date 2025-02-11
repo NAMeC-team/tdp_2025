@@ -48,7 +48,7 @@ $\begin{bmatrix}
     to catch the ball and manipulate it further. Due to electromagnetic interferences coming
     from our kicker mechanism, the maximum kicking power is limited, thus we chose to not take into account outgoing ball speed
     when calculating this score. By computing the closest ally's distance using $d_{min}$ as defined in (\ref{eq:d-min-ally})
-    the score is given by equation (\ref{eq:dist-closest-ally}), with $P_{allies}$ denoting the set of $(x, y)$ ally positions on the field.
+    the score is given by equation \ref{eq:dist-closest-ally}, with $P_{allies}$ denoting the set of $(x, y)$ ally positions on the field.
     
     \begin{equation}
         \label{eq:d-min-ally}
@@ -113,9 +113,9 @@ $\begin{bmatrix}
 \end{figure}
 
 
-By summing up these score computations, alongside a given weight for each $\sum{\omega_{i}s_i}$ with $\omega_i$ the weight for each $s_i$ score computed.
+By summing up these score computations, alongside a given weight for each score function, total is compured is computed by $\sum{\omega_{i}s_i}$ with $\omega_i$ the weight for each $s_i$ score computed.
 This allows us to tune the algorithm to favour certain conditions over others. Figure \ref{fig:combined} presents the resulting score heatmap obtained
-on a given world configuration, with figure \ref{fig:world-setup}.
+on the world configuration depicted by figure \ref{fig:world-setup}.
 
 \begin{figure}[h]
     \centering
