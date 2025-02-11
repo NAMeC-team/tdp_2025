@@ -1,0 +1,23 @@
+\subsection{Refactor of game state detection}
+During last competition, many fouls were committed by our robots due to a
+misunderstanding of the rulebook. The error could not be fixed easily because
+the current codebase was parsing the current game state using a combination of conditions and ``j'' statements.
+Thus, we have rewritten the state machine detection from scratch to improve maintenability
+and readability of the code. Since our AI codebase is in Rust, we first searched for
+librairies to implement the game states of a match. But because it is required
+to handle rollback in the state machine, we have decided to not use any library,
+to keep the codebase simple, as we do not need all of the functionalities of a finite state machine.
+In particular, the state machine of a match runs infinitely (thus no accepting state).
+
+The Rust language provides a match statement, which allows for pattern matching in the code.
+Using this mechanism, only the transition function is required to correctly parse the game states
+of the match. The transition function performs pattern matching over four variables:
+current game state, latest command sent by the referee, reference poistion for the ball and latest
+game event. With unit testing, this has proven sufficient to handle game states correctly,
+and is much readable to the human eye, as pattern matching looks closely to listing the transitions
+of the state machine on paper.
+
+Note that the transition function is not called at every iteration of our complete system.
+It is only called whenever a new command from the referee has been sent, or if the current
+game state dynamic, meaning it depends on time or on another condition (such as the ``FreeKick'' state,
+that transitions to ``Running'' once a robot touches the ball).
