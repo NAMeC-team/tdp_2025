@@ -16,7 +16,7 @@ When the robot wants to move to a specific position, he first checks if any othe
 
     \item \textbf{Trajectory Smoothing}
 
-    Once a path is calculated, it is smoothed to eliminate unnecessary waypoints, retaining only significant points to optimize the trajectory.
+    Once a path is calculated, it is smoothed to eliminate unnecessary waypoints, retaining only significant points to optimize the trajectory. The way it's done is by itterating over the path, from the target to the robot, and check for each points if the robot can reach it without hitting an obstacle. If it can, the point is removed from the path, otherwise it is kept and we continue to the next point considering the current one as a new reference.
 
     \item \textbf{Optimal Direction Selection}
 
@@ -24,7 +24,7 @@ When the robot wants to move to a specific position, he first checks if any othe
 
     \item \textbf{Continuous Recalculation}
 
-    The algorithm runs continuously, recalculating the best trajectory in real-time, ensuring dynamic responsiveness to changing environments.
+    The algorithm runs continuously, recalculating the best trajectory in real-time. Because of this, we just need to set the robot target to be the first point of the path found by the algorithm.
 \end{itemize}
 
 \begin{figure}
