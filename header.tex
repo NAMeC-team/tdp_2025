@@ -7,7 +7,7 @@
 \titlerunning{NAMeC - Team Description Paper}
 
 \author{
-    M. Bernet, E. Bouvier, A. Calugi, B.Chew, P. Félix, J. Gautier, C. Godinat,
+    A. Calugi, B.Chew, P. Félix, J. Gautier, C. Godinat,
     C.Labbé, J. Lindois, T.W. Menier, C.A. Vlamynck
 }
 
@@ -28,11 +28,10 @@
 
 \begin{abstract}
 The following paper presents the advancements of NAMeC, french robotics team 
-which has participated four times in the SSL league at Montreal, Sydney, Bordeaux, and Eindhoven.
-  
-As the architecture of the robot is being renewed \cite{tdp2023}, this paper will go
-in detail about the different firmware and software improvements
-that have been made to improve the quality of control system on our robots.
+which has participated four times in the SSL league. We will explain
+in detail about the software improvements in terms of robot control, such as the
+new decision-making system and optimal pass computation. Some improvements in the
+firmware will also be reviewed.
 \end{abstract}
 
 \keywords{RoboCup, Small Size League, embedded systems, path planning, decision making}
@@ -40,11 +39,10 @@ that have been made to improve the quality of control system on our robots.
 \section{Introduction}
 
 Since joining the RoboCup Small Size League in 2018, the team has participated in four major competitions: Montreal, Sydney, Bordeaux, and Eindhoven.
-The last competition is a significant milestone, as we transitioned to a fully student-led organization.
-
-With our sights set firmly on the podium this year, we have implemented several critical improvements to enhance our performance.
-These include the development of \textbf{BigBro}, a decision-making algorithm to optimize strategy, and \textbf{Trinamic},
-a hardware solution for efficient Field-Oriented Control (FOC). Additionally, we have introduced advanced obstacle avoidance techniques,
-implemented \textbf{Payload ACK} with TDMA for reliable communication, and designed a new wheel-fixing system to improve stability.
-Other upgrades include the use of enhanced shell materials for durability and performance, as well as an innovative team color-changing
-system for improved visibility and adaptability.
+The last competition marks a significant milestone, as we transitioned to a fully student-led organization.
+As the architecture of the robot is being renewed \cite{tdp2023}, the team has kept the current electronics.
+The software has been improved with the implementation of a decision-making system, named "BigBro", which has been
+used during the last competition. A score-based best pass location algorithm is also presented, which we plan to use
+to make use of passes in a match. Additionally, we have introduced a new obstacle avoidance method,
+that proved effective at last RoboCup. This paper also presents how we use functionalities of the radio module
+used for communication, the nRF24L01+, to receive feedbacks from the robots while avoiding packet collisions.
